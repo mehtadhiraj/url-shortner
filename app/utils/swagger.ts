@@ -2,7 +2,7 @@ import { getMetadataArgsStorage } from 'routing-controllers';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { SchemaObject } from 'openapi3-ts';
-import { routingControllerOptions, swaggerRoutingOptions } from './RoutingConfig';
+import { routingControllerOptions } from './RoutingConfig';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const swaggerUi = require('swagger-ui-express');
 

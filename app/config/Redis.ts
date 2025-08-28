@@ -1,7 +1,7 @@
 import { Property } from 'ts-convict';
-import { config } from '../server/types';
+import { Redis as RedisType } from '../types';
 
-export class Redis implements config.Redis {
+export class Redis implements RedisType {
     @Property({
         doc: 'The database connection url',
         default: 'localhost:6379',

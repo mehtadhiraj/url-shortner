@@ -1,7 +1,7 @@
 import { Property } from 'ts-convict';
-import { config } from '../server/types';
+import { Postgres as PostgresType } from '../types';
 
-export class Postgres implements config.Postgres {
+export class Postgres implements PostgresType {
     @Property({
         doc: 'The database host',
         default: 'localhost',

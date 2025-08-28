@@ -120,7 +120,8 @@ export class ShortLinkService {
         // start time of each to be as a key for hourly stats
         const hourly = stats.reduce((acc, curr) => {
             const date = moment(curr.timestamp).format('YYYY-MM-DD');
-            const hour = moment(curr.timestamp).format('HH');
+            // hour should not be converted to utc
+            const hour = moment(curr.timestamp).utc().format('HH');
             acc[`${date}-${hour}`] = (acc[`${date}-${hour}`] || 0) + 1;
             return acc;
         }, {});

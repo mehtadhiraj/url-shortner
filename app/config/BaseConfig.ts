@@ -1,14 +1,14 @@
 import { Config, Property } from 'ts-convict';
-import { config } from '../server/types';
+import { BaseConfig as BaseConfigType, Redis as RedisType, Postgres as PostgresType } from '../types';
 import { Postgres } from './Database';
 import { Redis } from './Redis';
 
 @Config()
-export class BaseConfig implements config.BaseConfig {
+export class BaseConfig implements BaseConfigType {
     // ts-convict will use the Typescript type if no format given
     @Property({
         doc: 'Mode of Server',
-        default: 'CONSUMER', // APP, CONSUMER, CRON
+        default: 'APP', // APP, CONSUMER, CRON
         env: 'DEPLOYMENT_TYPE',
     })
     public mode: string;
@@ -89,9 +89,9 @@ export class BaseConfig implements config.BaseConfig {
     public consumerName: string;
 
     @Property(Postgres)
-    public db: config.Postgres;
+    public db: PostgresType;
 
     @Property(Redis)
-    public redis: config.Redis;
+    public redis: RedisType;
 
 }

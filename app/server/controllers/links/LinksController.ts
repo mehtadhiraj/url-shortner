@@ -4,7 +4,7 @@ import { Inject, Service } from "typedi";
 import { ShortLinkService } from "../../services/links/ShortlinkService";
 import { Logger } from "../../../../libs/logs/logger";
 import { ResponseSchema } from "routing-controllers-openapi";
-import { CreateShortLinkRequestValidator } from "../../middlewares/requestValidator";
+import { CreateShortLinkRequestValidator, GetStatsRequestValidator } from "../../middlewares/requestValidator";
 import { Response } from "express";
 import RedisLock from "../../decorators/RedisLock";
 import { RedisPrefix } from "../../constants/enums";
@@ -72,21 +72,19 @@ export class LinksController {
     })
     @ResponseSchema(CustomError, {statusCode: 400, description: 'Bad Request'})
     @ResponseSchema(CustomError, {statusCode: 500, description: 'Internal server error'})
+    @UseBefore(GetStatsRequestValidator)
     async getStats(
         @Param('alias') alias: string,
         @QueryParam('startDate') startDate: string,
         @QueryParam('endDate') endDate: string
     ): Promise<StatsResponse> {
         try {
-            // if startDate is not provided, set it to 1 month ago
-            if (!startDate) {
+            if(!startDate) {
                 startDate = moment().subtract(30, 'days').toISOString();
             }
-            // if endDate is not provided, set it to today
-            if (!endDate) {
+            if(!endDate) {
                 endDate = moment().toISOString();
             }
-            console.log(startDate, endDate);
             const stats: StatsResponse = await this.shortLinkService.getStats(alias, startDate, endDate);
             return stats;
         } catch (error) {

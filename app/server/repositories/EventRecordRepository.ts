@@ -1,7 +1,8 @@
 import { Model } from 'objection';
 import { Service } from 'typedi';
 import { Entity, IdColumn } from '@tsed/objection';
-import { EventRecordObject, StatsResponse } from '../../types';
+import { EventRecordObject } from '../../types';
+import { getRedisInstance } from '../../data/RedisProvider';
 
 @Entity('eventRecord')
 class EventRecordModel extends Model implements EventRecordObject {
@@ -17,10 +18,14 @@ class EventRecordModel extends Model implements EventRecordObject {
 
 @Service()
 export class EventRecordRepository {
+    private async getRedisInstance() {
+        return await getRedisInstance();
+    }
+
     async create(data: EventRecordObject): Promise<EventRecordObject> {
         data.createdAt = new Date();
         data.updatedAt = new Date();
-        return EventRecordModel.query().insert(data);
+        return await EventRecordModel.query().insert(data);
     }
 
     async bulkCreate(data: EventRecordObject[]): Promise<EventRecordObject[]> {
@@ -32,16 +37,13 @@ export class EventRecordRepository {
         return EventRecordModel.query().insert(records);
     }
 
-    async findByShortlinkId(shortlinkId: string): Promise<EventRecordObject | null> {
-        return EventRecordModel.query().where({ shortlinkId }).first();
-    }
-
-    async findByShortlinkIdAndEventType(shortlinkId: string, eventType: string): Promise<EventRecordObject | null> {
-        return EventRecordModel.query().where({ shortlinkId, eventType }).first();
-    }
-
     async getStats(alias: string, startDate: string, endDate: string): Promise<EventRecordObject[]> {
+        const redisStats = await (await this.getRedisInstance()).get(`eventRecord:${alias}:${startDate}:${endDate}`);
+        if (redisStats) {
+            return JSON.parse(redisStats);
+        }
         const stats = await EventRecordModel.query().where({ alias }).where('timestamp', '>=', startDate).where('timestamp', '<=', endDate);
+        await (await this.getRedisInstance()).set(`eventRecord:${alias}:${startDate}:${endDate}`, JSON.stringify(stats), 'EX', 60 * 60 * 24); // Expiry 1 day
         return stats;
     }
 }

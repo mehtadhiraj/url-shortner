@@ -1,0 +1,119 @@
+# docker-compose.sandbox.yml
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: url-shortner-redis-sbx
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: url-shortner-postgres-sbx
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: short_url_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_sbx:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d short_url_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  app:
+    image: node:20-alpine
+    container_name: url-shortner-app-sbx
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    command: >
+      sh -c "npm ci &&
+             npm run build &&
+             npm run migrate &&
+             npm run start"
+    environment:
+      # BaseConfig
+      DEPLOYMENT_TYPE: "APP"
+      PRINT_STACK_TRACE: "true"
+      NODE_ENV: "development"
+      SHORTLINK_ALIAS_LENGTH: "10"
+      APP_BASE_URL: "http://localhost:8500"
+      PORT: "8500"
+      HOSTNAME: "http://localhost"
+      API_ROOT: "/"
+      CONSUMER_NAME: "ClickConsumer"
+      # Postgres (Database)
+      DATABASE_HOST: "postgres"
+      DATABASE_PORT: "5432"
+      DATABASE_DB: "short_url_db"
+      DATABASE_USER: "admin"
+      DATABASE_PASS: "admin"
+      POSTGRESS_URL: "postgres://admin:admin@postgres:5432/short_url_db"
+      DATABASE_MIN_CONNECTION_POOL: "1"
+      DATABASE_MAX_CONNECTION_POOL: "10"
+      DATABASE_CONNECTION_POOL_IDLE_TIMEOUT: "10000"
+      # Redis
+      REDIS_URL: "redis://redis:6379"
+    ports:
+      - "8500:8500"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  consumer:
+    image: node:20-alpine
+    container_name: url-shortner-consumer-sbx
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    command: >
+      sh -c "npm ci &&
+             npm run build &&
+             npm run start"
+    environment:
+      # BaseConfig
+      DEPLOYMENT_TYPE: "CONSUMER"
+      PRINT_STACK_TRACE: "true"
+      NODE_ENV: "development"
+      SHORTLINK_ALIAS_LENGTH: "10"
+      APP_BASE_URL: "http://localhost:8501"
+      PORT: "8501"
+      HOSTNAME: "http://localhost"
+      API_ROOT: "/"
+      CONSUMER_NAME: "ClickConsumer"
+      # Postgres (Database)
+      DATABASE_HOST: "postgres"
+      DATABASE_PORT: "5432"
+      DATABASE_DB: "short_url_db"
+      DATABASE_USER: "admin"
+      DATABASE_PASS: "admin"
+      POSTGRESS_URL: "postgres://admin:admin@postgres:5432/short_url_db"
+      DATABASE_MIN_CONNECTION_POOL: "1"
+      DATABASE_MAX_CONNECTION_POOL: "10"
+      DATABASE_CONNECTION_POOL_IDLE_TIMEOUT: "10000"
+      # Redis
+      REDIS_URL: "redis://redis:6379"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  pgdata_sbx:

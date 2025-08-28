@@ -17,7 +17,7 @@ module.exports = {
     '!app/server/repositories/**',
   ],
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
+  coverageReporters: ['text', 'lcov', 'html', 'json'],
   setupFilesAfterEnv: ['<rootDir>/spec/setup.ts'],
   moduleNameMapping: {
     '^app/(.*)$': '<rootDir>/app/$1',

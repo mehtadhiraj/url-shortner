@@ -92,7 +92,6 @@ The tests use the following configuration:
 - **Test Runner**: Jest with ts-jest preset
 - **Mocking**: Automatic mocking of external dependencies
 - **Coverage**: Comprehensive coverage reporting
-- **Timeout**: 30 seconds for async operations
 
 ## Mocking Strategy
 
@@ -122,53 +121,3 @@ const request = TestDataFactory.createShortLinkRequest({
 // Create multiple stream messages
 const messages = TestDataFactory.createMultipleStreamMessages(5);
 ```
-
-## Important Test Scenarios Covered
-
-### Edge Cases
-- Empty inputs and null values
-- Invalid URL formats
-- Non-existent aliases
-- Database connection failures
-- Redis stream errors
-- Large payload handling
-
-### Business Logic
-- Duplicate link prevention
-- Vanity URL handling
-- Click tracking and analytics
-- Date range filtering for stats
-- Consumer group management
-
-### Error Handling
-- Custom error propagation
-- Service layer error handling
-- Network timeout scenarios
-- Validation failures
-
-## Best Practices
-
-1. **Isolation**: Each test is independent and doesn't affect others
-2. **Mocking**: External dependencies are properly mocked
-3. **Coverage**: All public methods and error paths are tested
-4. **Readability**: Tests follow AAA pattern (Arrange, Act, Assert)
-5. **Performance**: Tests run quickly with proper mocking
-6. **Encapsulation**: Only test public interfaces, avoid accessing private properties
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Jest not found**: Install dependencies with `npm install`
-2. **TypeScript errors**: Ensure `@types/jest` is installed
-3. **Mock errors**: Check that all external dependencies are mocked
-4. **Timeout errors**: Increase timeout for slow async operations
-
-### Debug Mode
-```bash
-# Run tests with debug output
-npx jest --verbose
-
-# Run a single test file with debugging
-npx jest ShortlinkService.test.ts --verbose
-``` 

@@ -11,6 +11,7 @@ import { StreamProducer } from "../StreamProducer";
 import { StreamKey } from "../../constants/enums";
 import { EventRecordRepository } from "../../repositories/EventRecordRepository";
 import * as moment from "moment";
+import { Logger } from "../../../../libs/logs/logger";
 
 @Service()
 export class ShortLinkService {
@@ -99,12 +100,14 @@ export class ShortLinkService {
     }
 
     async recordEvent(messages: StreamMessage[]): Promise<void> {
+        Logger.info(`event-record: recording ${messages.length} events`);
         const records = messages.map(message => ({
             alias: message.fields.alias,
             timestamp: new Date(Number(message.fields.timestamp)).toISOString(),
             eventType: message.fields.eventType,
             eventData: message,
         }));
+        Logger.info(`event-record: records: ${JSON.stringify(records)}`);
         await this.eventRecordRepository.bulkCreate(records);
         return;
     }

@@ -58,6 +58,7 @@ export class ClickStreamConsumer implements BaseStreamConsumer{
   private async consumeLoop(): Promise<void> {
     while (this.running) {
       try {
+        Logger.info(`[${this.group}] reading from stream ${this.streamKey}`);
         const msgs = await this.provider.readFromStream({
             streamName: this.streamKey,
             consumerGroup: this.group,
@@ -65,6 +66,8 @@ export class ClickStreamConsumer implements BaseStreamConsumer{
             count: this.readCount,
             blockTime: this.readBlockMs
         });
+
+        Logger.info(`[${this.group}] read ${msgs.length} messages from stream ${this.streamKey}`);
 
         if (!msgs.length) continue;
 
@@ -78,6 +81,7 @@ export class ClickStreamConsumer implements BaseStreamConsumer{
   }
 
   private async processMessage(msgs: StreamMessage[]): Promise<void> {
+    Logger.info(`[${this.group}] processing ${msgs.length} messages from stream ${this.streamKey}`);
     const messageIds = msgs.map((msg) => msg.id);
     try {
       await this.handler(msgs);
@@ -112,6 +116,7 @@ export class ClickStreamConsumer implements BaseStreamConsumer{
   }
 
   private async deadLetter(msgs: StreamMessage[], error: string): Promise<void> {
+    Logger.info(`[${this.group}] moving ${msgs.length} messages to DLQ ${this.dlqKey}`);
     for (const msg of msgs) {
       const attempts = await this.getAttempts(msg.id);
       await this.provider.addToStream(this.dlqKey, {

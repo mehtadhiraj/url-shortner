@@ -12,7 +12,6 @@ module.exports = {
     '!app/data/**',
     '!app/app.ts',
     '!app/server/Server.ts',
-    '!app/server/controllers/**',
     '!app/server/middlewares/**',
     '!app/server/interceptors/**',
     '!app/server/repositories/**',

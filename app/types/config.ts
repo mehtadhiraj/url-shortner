@@ -10,6 +10,8 @@ export interface BaseConfig {
     shortlinkAliasLength: number;
     appBaseUrl: string;
     consumerName?: string;
+    shortlinkRedisThreshold: number;
+    shortlinkRedisExpire: number;
 }
 export interface Postgres {
     host: string;

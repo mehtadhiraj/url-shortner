@@ -52,8 +52,9 @@ services:
       APP_BASE_URL: "http://localhost:8500"
       PORT: "8500"
       HOSTNAME: "http://localhost"
-      API_ROOT: "/"
       CONSUMER_NAME: "ClickConsumer"
+      SHORTLINK_REDIS_THRESHOLD: "10"
+      SHORTLINK_REDIS_EXPIRE: "60"
       # Postgres (Database)
       DATABASE_HOST: "postgres"
       DATABASE_PORT: "5432"
@@ -94,7 +95,6 @@ services:
       APP_BASE_URL: "http://localhost:8501"
       PORT: "8501"
       HOSTNAME: "http://localhost"
-      API_ROOT: "/"
       CONSUMER_NAME: "ClickConsumer"
       # Postgres (Database)
       DATABASE_HOST: "postgres"

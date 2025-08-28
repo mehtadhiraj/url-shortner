@@ -88,6 +88,24 @@ export class BaseConfig implements BaseConfigType {
     })
     public consumerName: string;
 
+    @Property({
+        doc: 'Shortlink redis threshold',
+        format: Number,
+        default: 10, // 10 request in given expiry time shortlinkRedisExpire
+        env: 'SHORTLINK_REDIS_THRESHOLD',
+        arg: 'shortlink_redis_threshold',
+    })
+    public shortlinkRedisThreshold: number;
+
+    @Property({
+        doc: 'Shortlink redis expire',
+        format: Number,
+        default: 60, // 60 seconds
+        env: 'SHORTLINK_REDIS_EXPIRE',
+        arg: 'shortlink_redis_expire',
+    })
+    public shortlinkRedisExpire: number;
+
     @Property(Postgres)
     public db: PostgresType;
 

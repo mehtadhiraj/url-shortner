@@ -9,7 +9,10 @@ import { Response } from "express";
 import RedisLock from "../../decorators/RedisLock";
 import { RedisPrefix } from "../../constants/enums";
 import * as moment from "moment";
+import { TSConvict } from "ts-convict";
+import { BaseConfig } from "../../../config/BaseConfig";
 
+const config: BaseConfig = new TSConvict<BaseConfig>(BaseConfig).load();
 @JsonController()
 @Service()
 export class LinksController {
@@ -31,8 +34,8 @@ export class LinksController {
             path: 'campaignId',
             argIndex: 0,
         }],
-        threshold: 10,
-        expire: 60,
+        threshold: config.shortlinkRedisThreshold,
+        expire: config.shortlinkRedisExpire,
         deleteConfig: {
             onError: true,
         },

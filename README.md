@@ -9,7 +9,7 @@ Quickstart (sandbox stack):
 
 ```bash
 # From project root
-docker compose -f docker-compose.sandbox.yml up -d --build
+docker-compose -f docker-compose.sandbox.yml up -d --build
 ```
 
 What this starts:
@@ -32,7 +32,7 @@ The `consumer` container runs:
 To rebuild from scratch (pull fresh images, clear caches):
 ```bash
 # Stop stack and remove volumes
-docker compose -f docker-compose.sandbox.yml down --volumes --remove-orphans
+docker-compose -f docker-compose.sandbox.yml down --volumes --remove-orphans
 ```
 
 ### API Testing

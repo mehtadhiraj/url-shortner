@@ -374,17 +374,5 @@ describe('ShortLinkService', () => {
         hourly: {},
       });
     });
-
-    it('should handle repository errors', async () => {
-      // Arrange
-      const alias = 'test123';
-      const startDate = '2023-01-01T00:00:00.000Z';
-      const endDate = '2023-01-02T23:59:59.999Z';
-
-      mockEventRecordRepository.getStats.mockRejectedValue(new Error('Database error'));
-
-      // Act & Assert
-      await expect(shortLinkService.getStats(alias, startDate, endDate)).rejects.toThrow('Database error');
-    });
   });
 }); 

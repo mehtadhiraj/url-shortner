@@ -74,6 +74,7 @@ export class ClickStreamConsumer implements BaseStreamConsumer{
         await this.sleep(1000);
       }
     }
+    return;
   }
 
   private async processMessage(msgs: StreamMessage[]): Promise<void> {

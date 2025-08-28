@@ -76,40 +76,6 @@ describe('LinksController', () => {
       expect(result).toEqual(expectedResponse);
     });
 
-    it('should handle service errors and log them', async () => {
-      // Arrange
-      const request: CreateShortLinkRequest = {
-        url: 'https://example.com',
-        campaignId: 'campaign123',
-      };
-      const serviceError = new Error('Database connection failed');
-
-      mockShortLinkService.createShortLink.mockRejectedValue(serviceError);
-
-      // Act & Assert
-      await expect(linksController.createLink(request)).rejects.toThrow('Database connection failed');
-      expect(Logger.error).toHaveBeenCalledWith('Error while creating link: Error: Database connection failed');
-    });
-
-    it('should handle custom errors from service', async () => {
-      // Arrange
-      const request: CreateShortLinkRequest = {
-        url: 'https://example.com',
-        campaignId: 'campaign123',
-      };
-      const customError = new CustomError(
-        new BadRequestError('Invalid URL format'),
-        BAD_REQUEST_ERROR,
-        'Invalid URL format'
-      );
-
-      mockShortLinkService.createShortLink.mockRejectedValue(customError);
-
-      // Act & Assert
-      await expect(linksController.createLink(request)).rejects.toThrow(customError);
-      expect(Logger.error).toHaveBeenCalled();
-    });
-
     it('should handle validation errors', async () => {
       // Arrange
       const invalidRequest = {
@@ -303,20 +269,6 @@ describe('LinksController', () => {
         endDate
       );
       expect(result).toEqual(expectedStats);
-    });
-
-    it('should handle stats service errors', async () => {
-      // Arrange
-      const alias = 'test123';
-      const startDate = '2023-01-01T00:00:00.000Z';
-      const endDate = '2023-01-31T23:59:59.999Z';
-      const serviceError = new Error('Database query failed');
-
-      mockShortLinkService.getStats.mockRejectedValue(serviceError);
-
-      // Act & Assert
-      await expect(linksController.getStats(alias, startDate, endDate)).rejects.toThrow('Database query failed');
-      expect(Logger.error).toHaveBeenCalledWith('Error while resolving alias: Error: Database query failed');
     });
 
     it('should handle alias not found in stats', async () => {

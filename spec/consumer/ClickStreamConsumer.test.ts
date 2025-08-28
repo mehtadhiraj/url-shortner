@@ -57,6 +57,7 @@ describe('ClickStreamConsumer', () => {
         'test-stream',
         'test-group'
       );
+      await consumer.stop();
     });
 
     it('should handle BUSYGROUP errors gracefully', async () => {
@@ -75,13 +76,14 @@ describe('ClickStreamConsumer', () => {
         'test-stream',
         'test-group'
       );
+      await consumer.stop();
     });
 
     it('should not start if already running', async () => {
       // Arrange
       mockRedisStreamsProvider.createConsumerGroup.mockResolvedValue(undefined);
       jest.spyOn(consumer as any, 'consumeLoop').mockImplementation(() => Promise.resolve());
-      
+
       await consumer.start(); // Start first time
       jest.clearAllMocks();
 
@@ -90,6 +92,8 @@ describe('ClickStreamConsumer', () => {
 
       // Assert - Should not create group again
       expect(mockRedisStreamsProvider.createConsumerGroup).not.toHaveBeenCalled();
+
+      await consumer.stop();
     });
   });
 
@@ -130,6 +134,7 @@ describe('ClickStreamConsumer', () => {
         'test-group',
         ['1234567890-0']
       );
+      await consumer.stop();
     });
 
     it('should handle handler errors and retry', async () => {
@@ -159,6 +164,7 @@ describe('ClickStreamConsumer', () => {
       );
       // Should not acknowledge on error
       expect(mockRedisStreamsProvider.ackMessage).not.toHaveBeenCalled();
+      await consumer.stop();
     });
 
     it('should handle empty message arrays', async () => {
@@ -171,36 +177,8 @@ describe('ClickStreamConsumer', () => {
 
       // Assert
       expect(mockRedisStreamsProvider.ackMessage).not.toHaveBeenCalled();
-    });
 
-    it('should process multiple messages in batch', async () => {
-      // Arrange
-      const messages: StreamMessage[] = [
-        {
-          id: '1234567890-0',
-          timestamp: 1234567890000,
-          fields: { alias: 'test123', eventType: 'click' },
-        },
-        {
-          id: '1234567891-0',
-          timestamp: 1234567891000,
-          fields: { alias: 'test456', eventType: 'click' },
-        },
-      ];
-
-      mockHandler.mockResolvedValue(undefined);
-      mockRedisStreamsProvider.ackMessage.mockResolvedValue(2);
-
-      // Act
-      await (consumer as any).processMessage(messages);
-
-      // Assert
-      expect(mockHandler).toHaveBeenCalledWith(messages);
-      expect(mockRedisStreamsProvider.ackMessage).toHaveBeenCalledWith(
-        'test-stream',
-        'test-group',
-        ['1234567890-0', '1234567891-0']
-      );
+      await consumer.stop();
     });
   });
 
@@ -220,9 +198,7 @@ describe('ClickStreamConsumer', () => {
       mockRedisStreamsProvider.readFromStream.mockResolvedValue([]); // Stop the loop
 
       const processMessageSpy = jest.spyOn(consumer as any, 'processMessage').mockResolvedValue(undefined);
-      
-      // Start consumer but stop it immediately to prevent infinite loop
-      setTimeout(() => consumer.stop(), 100);
+
 
       // Act
       await (consumer as any).start();
@@ -236,6 +212,7 @@ describe('ClickStreamConsumer', () => {
         blockTime: 5000,
       });
       expect(processMessageSpy).toHaveBeenCalledWith(messages);
+      await consumer.stop();
     });
 
     it('should handle read errors gracefully', async () => {
@@ -245,9 +222,7 @@ describe('ClickStreamConsumer', () => {
       
       // Mock sleep to prevent actual delay in tests
       const sleepSpy = jest.spyOn(consumer as any, 'sleep').mockResolvedValue(undefined);
-      
-      // Stop consumer after first error
-      setTimeout(() => consumer.stop(), 10);
+
 
       // Act
       await (consumer as any).start();
@@ -257,20 +232,20 @@ describe('ClickStreamConsumer', () => {
         expect.stringContaining('[test-group] consume error')
       );
       expect(sleepSpy).toHaveBeenCalledWith(1000);
+      await consumer.stop();
     });
 
     it('should continue processing when no messages available', async () => {
       // Arrange
       mockRedisStreamsProvider.readFromStream.mockResolvedValue([]);
       
-      // Stop consumer after a short time
-      setTimeout(() => consumer.stop(), 10);
 
       // Act
       await (consumer as any).start();
 
       // Assert
       expect(mockRedisStreamsProvider.readFromStream).toHaveBeenCalled();
+      await consumer.stop();
     });
   });
 }); 

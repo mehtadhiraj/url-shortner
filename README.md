@@ -93,6 +93,10 @@ Scenarios to test by tweaking envs:
 - General caching/locking primitives are provided via `app/data/RedisProvider.ts` and used across services/decorators.
 - Redis Streams: The project includes a consumer (`consumer` service) that can read from Redis Streams for click tracking and analytics. See `app/data/RedisStreamsProvider.ts` and `app/consumer/ClickStreamConsumer.ts`.
 
+### Video Walkthrough
+- Database schema and Redis usage: [Loom recording](https://www.loom.com/share/0fa7e7a581204b4696fb72aefef1be56?sid=491da533-abb2-48d9-a2c1-7695abb64b7c)
+- Redis Streams usage: [Loom recording](https://www.loom.com/share/e3ec5ff077e448579929bd7901475e19?sid=ab35fb6f-396a-42f5-998e-a52b74adb068)
+
 ### Troubleshooting / Logs
 - Check consumer logs to verify messages processing:
 ```bash

@@ -32,6 +32,7 @@ export interface Redis {
         blockTime?: number;
         maxRetries?: number;
         readCount?: number;
+        readBlockMs?: number;
     }
 }
 

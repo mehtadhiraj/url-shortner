@@ -31,6 +31,7 @@ export class ConsumerInitializer {
                     maxRetries: this.config.redis.streams.maxRetries,
                     readCount: this.config.redis.streams.readCount,
                     consumerName: this.config.consumerName,
+                    readBlockMs: this.config.redis.streams.readBlockMs,
                 });
                 await clickCosumer.start();
                 break;

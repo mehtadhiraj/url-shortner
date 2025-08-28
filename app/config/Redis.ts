@@ -18,6 +18,7 @@ export class Redis implements RedisType {
             blockTime: 5000,
             maxRetries: 3,
             readCount: 100,
+            readBlockMs: 1000,
         }
     })
     public streams: {
@@ -26,5 +27,6 @@ export class Redis implements RedisType {
         blockTime: number;
         maxRetries: number;
         readCount: number;
+        readBlockMs: number;
     };
 }

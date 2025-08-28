@@ -72,6 +72,9 @@ export class ClickStreamConsumer implements BaseStreamConsumer{
         if (!msgs.length) continue;
 
         await this.processMessage(msgs);
+        Logger.info(`[${this.group}] processed ${msgs.length} messages from stream ${this.streamKey}`);
+        Logger.info(`[${this.group}] sleeping for ${this.readBlockMs}ms`);
+        await this.sleep(this.readBlockMs);
       } catch (err: any) {
         Logger.error(`[${this.group}] consume error: ${err}, stack: ${err.stack}`);
         await this.sleep(1000);

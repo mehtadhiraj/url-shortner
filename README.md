@@ -116,3 +116,10 @@ docker logs url-shortner-app-sbx -f | cat
   - Batch incoming events in the consumer (e.g., size 100–1000 or time-based flush) and perform bulk inserts in a single transaction to reduce write amplification.
   - Use Knex bulk `insert([...])` for higher throughput; ensure idempotency keys to avoid duplicates on retries.
   - Tune DB pool sizes and commit frequency; monitor latency vs. batch size trade-offs.
+- Database schema evolution
+  - Introduce a `campaign` table (`id` PK plus metadata). Make `shortlink.campaignId` a foreign key to `campaign.id` and index `shortlink.campaignId`.
+  - Add an `account` table. Link `campaign.accountId` as a foreign key to `account.id`. Index `campaign.accountId` and consider composite indexes for common queries.
+- Authentication and authorization
+  - Add JWT-based auth. Clients pass a bearer token; server extracts `accountId` (and roles/permissions) from the token.
+  - Scope API operations to the authenticated `accountId`. Validate that any `campaignId` in requests belongs to that account before processing.
+  - Consider per-account rate limits and role-based access (e.g., admin vs. member) for campaign management.
